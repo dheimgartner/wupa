@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>__TITLE__</title>
+  <link rel="stylesheet" href="__CSS__">
+  <style>body { margin: 0; } .topbar { display: none; }</style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="__JS__"></script>
+  <script>
+    window.ui = SwaggerUIBundle({
+      url: "__SPEC__",
+      dom_id: "#swagger-ui",
+      deepLinking: true,
+      filter: true,                    // search box for the many tags
+      docExpansion: "none",
+      defaultModelsExpandDepth: 0,
+      displayRequestDuration: true,
+      showExtensions: true
+    });
+  </script>
+</body>
+</html>

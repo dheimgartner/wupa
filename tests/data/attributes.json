@@ -1,0 +1,25 @@
+{
+ "finma_geschaeft": {
+  "entity_set": "finma_geschaefts", "label": "Geschäft", "description": "",
+  "attributes": {
+   "finma_geschaeftid": {"type": "Uniqueidentifier", "create": true, "update": false, "read": true, "required": "SystemRequired", "label": "Geschäft"},
+   "finma_name": {"type": "String", "create": true, "update": true, "read": true, "required": "ApplicationRequired", "label": "Name", "max_length": 200},
+   "finma_betreff": {"type": "String", "create": true, "update": true, "read": true, "required": "None", "label": "Betreff"},
+   "finma_casenr": {"type": "String", "create": false, "update": false, "read": true, "required": "None", "label": "Geschäftsnummer"},
+   "finma_prioritaetchoice": {"type": "Picklist", "create": true, "update": true, "read": true, "required": "None", "label": "Priorität",
+                              "options": [[100000000, "Normal"], [100000001, "Hoch"]], "multi_select": false},
+   "statecode": {"type": "State", "create": false, "update": true, "read": true, "required": "SystemRequired", "label": "Status",
+                 "options": [[0, "Aktiv"], [1, "Inaktiv"]]},
+   "statuscode": {"type": "Status", "create": true, "update": true, "read": true, "required": "None", "label": "Statusgrund"},
+   "createdon": {"type": "DateTime", "create": false, "update": false, "read": true, "required": "None", "label": "Erstellt am"},
+   "ownerid": {"type": "Owner", "create": true, "update": true, "read": true, "required": "SystemRequired", "label": "Besitzer"},
+   "owninguser": {"type": "Lookup", "create": false, "update": false, "read": true, "required": "None", "label": "Besitzender Benutzer"},
+   "createdby": {"type": "Lookup", "create": false, "update": false, "read": true, "required": "None", "label": "Erstellt von"},
+   "finma_geschaeftprozessid": {"type": "Lookup", "create": true, "update": true, "read": true, "required": "ApplicationRequired", "label": "Geschäftsprozess"},
+   "finma_teilprozessid": {"type": "Lookup", "create": true, "update": true, "read": true, "required": "ApplicationRequired", "label": "Teilprozess"},
+   "finma_finmaobjektinstitutid": {"type": "Lookup", "create": true, "update": true, "read": true, "required": "None", "label": "Institut"},
+   "finma_verantwortlicheid": {"type": "Lookup", "create": true, "update": true, "read": true, "required": "Recommended", "label": "Verantwortliche"},
+   "finma_vorgaengergeschaeftid": {"type": "Lookup", "create": true, "update": true, "read": true, "required": "None", "label": "Vorgänger"}
+  }
+ }
+}

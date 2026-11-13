@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+ <edmx:DataServices>
+  <Schema Namespace="Microsoft.Dynamics.CRM" Alias="mscrm" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+   <EntityType Name="crmbaseentity" Abstract="true"/>
+   <EntityType Name="principal" BaseType="mscrm.crmbaseentity" Abstract="true">
+    <Key><PropertyRef Name="ownerid"/></Key>
+    <Property Name="ownerid" Type="Edm.Guid"/>
+   </EntityType>
+   <EntityType Name="systemuser" BaseType="mscrm.principal">
+    <Key><PropertyRef Name="systemuserid"/></Key>
+    <Property Name="systemuserid" Type="Edm.Guid"/>
+    <Property Name="fullname" Type="Edm.String" Unicode="false"/>
+   </EntityType>
+   <EntityType Name="team" BaseType="mscrm.principal">
+    <Key><PropertyRef Name="teamid"/></Key>
+    <Property Name="teamid" Type="Edm.Guid"/>
+    <Property Name="name" Type="Edm.String" Unicode="false"/>
+   </EntityType>
+   <EntityType Name="finma_geschaeftsprozess" BaseType="mscrm.crmbaseentity">
+    <Key><PropertyRef Name="finma_geschaeftsprozessid"/></Key>
+    <Property Name="finma_geschaeftsprozessid" Type="Edm.Guid"/>
+    <Property Name="finma_name" Type="Edm.String" Unicode="false"/>
+   </EntityType>
+   <EntityType Name="finma_teilprozess" BaseType="mscrm.crmbaseentity">
+    <Key><PropertyRef Name="finma_teilprozessid"/></Key>
+    <Property Name="finma_teilprozessid" Type="Edm.Guid"/>
+    <Property Name="finma_name" Type="Edm.String" Unicode="false"/>
+   </EntityType>
+   <EntityType Name="finma_finmaobjektinstitut" BaseType="mscrm.crmbaseentity">
+    <Key><PropertyRef Name="finma_finmaobjektinstitutid"/></Key>
+    <Property Name="finma_finmaobjektinstitutid" Type="Edm.Guid"/>
+    <Property Name="finma_name" Type="Edm.String" Unicode="false"/>
+   </EntityType>
+   <EntityType Name="finma_aktivitaet" BaseType="mscrm.crmbaseentity">
+    <Key><PropertyRef Name="finma_aktivitaetid"/></Key>
+    <Property Name="finma_aktivitaetid" Type="Edm.Guid"/>
+    <Property Name="_finma_geschaeftid_value" Type="Edm.Guid"/>
+    <NavigationProperty Name="finma_GeschaeftId" Type="mscrm.finma_geschaeft" Nullable="false" Partner="finma_geschaeft_aktivitaet_GeschaeftId">
+     <ReferentialConstraint Property="_finma_geschaeftid_value" ReferencedProperty="finma_geschaeftid"/>
+    </NavigationProperty>
+   </EntityType>
+   <EntityType Name="finma_geschaeft" BaseType="mscrm.crmbaseentity">
+    <Key><PropertyRef Name="finma_geschaeftid"/></Key>
+    <Property Name="finma_geschaeftid" Type="Edm.Guid"/>
+    <Property Name="finma_name" Type="Edm.String" Unicode="false"/>
+    <Property Name="finma_betreff" Type="Edm.String" Unicode="false"/>
+    <Property Name="finma_casenr" Type="Edm.String" Unicode="false"/>
+    <Property Name="finma_von" Type="Edm.Date"/>
+    <Property Name="finma_prioritaetchoice" Type="Edm.Int32"/>
+    <Property Name="finma_istgebuehrenpflichtig" Type="Edm.Boolean"/>
+    <Property Name="statecode" Type="Edm.Int32"/>
+    <Property Name="statuscode" Type="Edm.Int32"/>
+    <Property Name="createdon" Type="Edm.DateTimeOffset"/>
+    <Property Name="modifiedon" Type="Edm.DateTimeOffset"/>
+    <Property Name="versionnumber" Type="Edm.Int64"/>
+    <Property Name="_createdby_value" Type="Edm.Guid"/>
+    <Property Name="_ownerid_value" Type="Edm.Guid"/>
+    <Property Name="_owninguser_value" Type="Edm.Guid"/>
+    <Property Name="_finma_geschaeftprozessid_value" Type="Edm.Guid"/>
+    <Property Name="_finma_teilprozessid_value" Type="Edm.Guid"/>
+    <Property Name="_finma_finmaobjektinstitutid_value" Type="Edm.Guid"/>
+    <Property Name="_finma_verantwortlicheid_value" Type="Edm.Guid"/>
+    <Property Name="_finma_vorgaengergeschaeftid_value" Type="Edm.Guid"/>
+    <NavigationProperty Name="createdby" Type="mscrm.systemuser" Nullable="false" Partner="lk_finma_geschaeft_createdby">
+     <ReferentialConstraint Property="_createdby_value" ReferencedProperty="systemuserid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="owninguser" Type="mscrm.systemuser" Nullable="false" Partner="user_finma_geschaeft">
+     <ReferentialConstraint Property="_owninguser_value" ReferencedProperty="systemuserid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="ownerid" Type="mscrm.principal" Nullable="false" Partner="owner_finma_geschaeft">
+     <ReferentialConstraint Property="_ownerid_value" ReferencedProperty="ownerid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="finma_GeschaeftProzessId" Type="mscrm.finma_geschaeftsprozess" Nullable="false" Partner="finma_geschaeftsprozess_geschaeft_GeschaeftProzessId">
+     <ReferentialConstraint Property="_finma_geschaeftprozessid_value" ReferencedProperty="finma_geschaeftsprozessid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="finma_TeilprozessId" Type="mscrm.finma_teilprozess" Nullable="false" Partner="finma_finma_teilprozess_finma_geschaeft_TeilprozessId">
+     <ReferentialConstraint Property="_finma_teilprozessid_value" ReferencedProperty="finma_teilprozessid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="finma_FinmaObjektInstitutId" Type="mscrm.finma_finmaobjektinstitut" Nullable="false" Partner="finma_finmaobjektinstitut_geschaeft_FinmaObjektInstitutId">
+     <ReferentialConstraint Property="_finma_finmaobjektinstitutid_value" ReferencedProperty="finma_finmaobjektinstitutid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="finma_VerantwortlicheId" Type="mscrm.systemuser" Nullable="false" Partner="finma_systemuser_geschaeft_VerantwortlicheId">
+     <ReferentialConstraint Property="_finma_verantwortlicheid_value" ReferencedProperty="systemuserid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="finma_VorgaengerGeschaeftId" Type="mscrm.finma_geschaeft" Nullable="false" Partner="finma_geschaeft_geschaeft_VorgaengerGeschaeftId">
+     <ReferentialConstraint Property="_finma_vorgaengergeschaeftid_value" ReferencedProperty="finma_geschaeftid"/>
+    </NavigationProperty>
+    <NavigationProperty Name="finma_geschaeft_aktivitaet_GeschaeftId" Type="Collection(mscrm.finma_aktivitaet)" Partner="finma_GeschaeftId"/>
+   </EntityType>
+   <ComplexType Name="WhoAmIResponse">
+    <Property Name="UserId" Type="Edm.Guid" Nullable="false"/>
+   </ComplexType>
+   <EntityType Name="EntityMetadata">
+    <Key><PropertyRef Name="MetadataId"/></Key>
+    <Property Name="MetadataId" Type="Edm.Guid" Nullable="false"/>
+    <Property Name="LogicalName" Type="Edm.String"/>
+   </EntityType>
+   <EntityContainer Name="System">
+    <EntitySet Name="systemusers" EntityType="Microsoft.Dynamics.CRM.systemuser"/>
+    <EntitySet Name="teams" EntityType="Microsoft.Dynamics.CRM.team"/>
+    <EntitySet Name="finma_geschaefts" EntityType="Microsoft.Dynamics.CRM.finma_geschaeft"/>
+    <EntitySet Name="finma_geschaeftsprozesses" EntityType="Microsoft.Dynamics.CRM.finma_geschaeftsprozess"/>
+    <EntitySet Name="finma_teilprozesses" EntityType="Microsoft.Dynamics.CRM.finma_teilprozess"/>
+    <EntitySet Name="finma_finmaobjektinstituts" EntityType="Microsoft.Dynamics.CRM.finma_finmaobjektinstitut"/>
+    <EntitySet Name="finma_aktivitaets" EntityType="Microsoft.Dynamics.CRM.finma_aktivitaet"/>
+    <EntitySet Name="EntityDefinitions" EntityType="Microsoft.Dynamics.CRM.EntityMetadata"/>
+   </EntityContainer>
+  </Schema>
+ </edmx:DataServices>
+</edmx:Edmx>
