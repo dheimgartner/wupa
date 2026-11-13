@@ -22,7 +22,10 @@ def _connection(p: argparse.ArgumentParser, base_url_required: bool = False):
     g.add_argument("--base-url", required=base_url_required,
                    help=f"Web API root, e.g. https://host/org/api/data/v9.1 (or ${config.ENV_BASE_URL})")
     g.add_argument("--auth", choices=AUTH_CHOICES, default="sspi",
-                   help="sspi = Windows single sign-on (default), none = no auth (testing only)")
+                   help=f"sspi = Windows single sign-on (default), "
+                        f"ntlm = explicit user/password (from ${config.ENV_USER}/${config.ENV_PASSWORD} or prompt), "
+                        f"none = no auth (testing only)")
+    g.add_argument("--user", help=f"User for ntlm, e.g. DOMAIN\\username (or ${config.ENV_USER})")
     g.add_argument("--ca-bundle", help="CA certificate bundle for an internal CA")
     g.add_argument("--insecure", action="store_true", help="Skip TLS verification (testing only)")
 
@@ -49,7 +52,7 @@ def _session(args):
     if args.insecure:
         import urllib3
         urllib3.disable_warnings()
-    return make_session(args.auth, verify=verify)
+    return make_session(args.auth, user=args.user, verify=verify)
 
 
 def _includes(args):

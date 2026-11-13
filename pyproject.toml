@@ -12,6 +12,7 @@ dependencies = ["requests>=2.28", "truststore>=0.9"]
 
 [project.optional-dependencies]
 sspi = ["requests-negotiate-sspi>=0.5"]      # Windows single sign-on
+ntlm = ["requests-ntlm>=1.1"]               # explicit user/password (user switching)
 ui = ["swagger-ui-bundle>=1.1"]              # Swagger UI assets offline (no CDN needed)
 dev = ["pytest>=7", "openapi-spec-validator>=0.7"]
 

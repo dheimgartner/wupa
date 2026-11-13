@@ -11,8 +11,8 @@ $metadata ──download──▶ metadata.xml ──generate──▶ openapi.j
 ## Install
 
 ```bash
-pip install -e ".[sspi,ui]"      # Windows: single sign-on + offline Swagger UI assets
-pip install -e ".[ui]"           # without SSPI (use --auth none for local/testing)
+pip install -e ".[sspi,ui]"           # Windows: single sign-on + offline Swagger UI assets
+pip install -e ".[sspi,ntlm,ui]"      # also enable explicit user/password (user switching)
 ```
 
 Requires Python 3.9+. The only hard dependency is `requests`.
@@ -48,7 +48,7 @@ odata-openapi build --base-url https://host/org/api/data/v9.1 --enrich \
 odata-openapi generate metadata.xml --attributes attributes.json --exclude "finma_ehp*"
 ```
 
-Connection options (all commands that call the server): `--auth sspi|none`, `--ca-bundle` (internal CA), `--insecure`. Authentication defaults to `sspi` (Windows single sign-on).
+Connection options (all commands that call the server): `--auth sspi|ntlm|none`, `--user` (for ntlm; password comes from `$ODATA_PASSWORD` or a prompt), `--ca-bundle` (internal CA), `--insecure`. Authentication defaults to `sspi` (Windows single sign-on).
 
 ## What gets generated
 
