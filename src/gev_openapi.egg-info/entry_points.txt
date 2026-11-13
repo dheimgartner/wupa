@@ -1,2 +1,0 @@
-[console_scripts]
-gev-openapi = gev_openapi.cli:main
