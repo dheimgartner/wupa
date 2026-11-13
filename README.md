@@ -1,6 +1,6 @@
 # odata-openapi
 
-Generates an OpenAPI 3.0 (Swagger) spec for a Dynamics 365 / Dataverse Web API such as FINMA's GEV, from its OData `$metadata`, and optionally serves it in Swagger UI with working "Try it out".
+Generates an OpenAPI 3.0 (Swagger) spec for a Dynamics 365 / Dataverse Web API from its OData `$metadata`, and optionally serves it in Swagger UI with working "Try it out".
 
 ```
 $metadata ──download──▶ metadata.xml ──generate──▶ openapi.json ──serve──▶ Swagger UI (+ proxy)
@@ -12,8 +12,7 @@ $metadata ──download──▶ metadata.xml ──generate──▶ openapi.j
 
 ```bash
 pip install -e ".[sspi,ui]"      # Windows: single sign-on + offline Swagger UI assets
-pip install -e ".[kerberos,ui]"  # Linux/macOS with a Kerberos ticket
-pip install -e ".[ntlm,ui]"      # explicit user/password
+pip install -e ".[ui]"           # without SSPI (use --auth none for local/testing)
 ```
 
 Requires Python 3.9+. The only hard dependency is `requests`.
@@ -22,35 +21,34 @@ Requires Python 3.9+. The only hard dependency is `requests`.
 
 ```bash
 # everything in one go: download, fetch column metadata, generate, open Swagger UI
-odata-openapi build --enrich --serve
+odata-openapi build --base-url https://host/org/api/data/v9.1 --enrich --serve
 ```
 
-Defaults: base URL `https://gev-int.finma.ch/gev/api/data/v9.1` (or `$GEV_BASE_URL`), all `finma_*` entity sets, Windows single sign-on.
+The base URL can also be set via the `ODATA_BASE_URL` environment variable.
 
 ## Commands
 
 | Command | What it does | Network |
 |---|---|---|
-| `download [-o metadata.xml] [--enrich]` | Saves `$metadata`; with `--enrich` also `attributes.json` for the selected tables | yes |
+| `download --base-url <url> [-o metadata.xml] [--enrich]` | Saves `$metadata`; with `--enrich` also `attributes.json` for the selected tables | yes |
 | `generate metadata.xml [--attributes attributes.json] [-o openapi.json]` | Builds the spec | no |
 | `serve openapi.json [--port 8000] [--no-proxy]` | Swagger UI on http://127.0.0.1:8000 | proxy only |
-| `build [--enrich] [--serve]` | All of the above | yes |
+| `build --base-url <url> [--enrich] [--serve]` | All of the above | yes |
 
 Examples:
 
 ```bash
 # only the tables you need, read + create only (small spec for UiPath)
-odata-openapi build --enrich --include finma_geschaefts --include finma_finmaobjektinstituts \
-    --include finma_geschaeftsprozesses --include finma_teilprozesses --operations list,get,create
+odata-openapi build --base-url https://host/org/api/data/v9.1 --enrich \
+    --include finma_geschaefts --include finma_finmaobjektinstituts \
+    --include finma_geschaeftsprozesses --include finma_teilprozesses \
+    --operations list,get,create
 
 # everything except EHP tables
 odata-openapi generate metadata.xml --attributes attributes.json --exclude "finma_ehp*"
-
-# production, once you know its URL
-odata-openapi build --base-url https://<prod-host>/gev/api/data/v9.1 --enrich
 ```
 
-Connection options (all commands that call the server): `--auth sspi|kerberos|ntlm|basic|bearer|none`, `--user`, `--ca-bundle` (internal CA), `--insecure`. Passwords and tokens come from `$GEV_PASSWORD` / `$GEV_TOKEN` or a prompt, never from the command line.
+Connection options (all commands that call the server): `--auth sspi|none`, `--ca-bundle` (internal CA), `--insecure`. Authentication defaults to `sspi` (Windows single sign-on).
 
 ## What gets generated
 
@@ -85,7 +83,7 @@ Studio's *Import Service* accepts OpenAPI 3.0 JSON. Keep the spec small (`--incl
 1. Body properties named `…@odata.bind`. These aren't valid C# identifiers, so check that the generated classes still send the right JSON names.
 2. Paths with parentheses (`/finma_geschaefts({id})`).
 
-The spec declares `negotiate` (Windows) security by default; set `--security` to match how UiPath authenticates.
+The spec declares `negotiate` (Windows) security by default; adjust with `--security` if needed.
 
 ## Python API
 
@@ -94,7 +92,7 @@ from odata_openapi import parse_metadata, build_spec
 from odata_openapi.download import load_attributes
 
 model = parse_metadata("metadata.xml")
-spec = build_spec(model, "https://gev-int.finma.ch/gev/api/data/v9.1",
+spec = build_spec(model, "https://host/org/api/data/v9.1",
                   include=["finma_geschaefts"], attributes=load_attributes("attributes.json"))
 ```
 
@@ -105,4 +103,4 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Tests run against a fixture `$metadata` and fake servers; no access to GEV is needed.
+Tests run against a fixture `$metadata` and fake servers; no live API access needed.

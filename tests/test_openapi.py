@@ -5,6 +5,9 @@ from odata_openapi import build_spec, select_entity_sets
 
 def test_selection(model):
     assert select_entity_sets(model) == [
+        "EntityDefinitions", "finma_aktivitaets", "finma_finmaobjektinstituts", "finma_geschaefts",
+        "finma_geschaeftsprozesses", "finma_teilprozesses", "systemusers", "teams"]
+    assert select_entity_sets(model, ["finma_*"]) == [
         "finma_aktivitaets", "finma_finmaobjektinstituts", "finma_geschaefts",
         "finma_geschaeftsprozesses", "finma_teilprozesses"]
     assert select_entity_sets(model, ["finma_geschaefts", "systemusers"]) == ["finma_geschaefts", "systemusers"]

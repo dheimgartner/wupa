@@ -5,15 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "odata-openapi"
 version = "0.1.0"
-description = "Download the OData $metadata of a Dynamics 365 / Dataverse Web API (e.g. FINMA GEV), generate an OpenAPI 3.0 spec, and serve it in Swagger UI."
+description = "Download the OData $metadata of a Dynamics 365 / Dataverse Web API, generate an OpenAPI 3.0 spec, and serve it in Swagger UI."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = ["requests>=2.28", "truststore>=0.9"]
 
 [project.optional-dependencies]
 sspi = ["requests-negotiate-sspi>=0.5"]      # Windows single sign-on
-ntlm = ["requests-ntlm>=1.1"]
-kerberos = ["requests-kerberos>=0.14"]
 ui = ["swagger-ui-bundle>=1.1"]              # Swagger UI assets offline (no CDN needed)
 dev = ["pytest>=7", "openapi-spec-validator>=0.7"]
 

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import requests
 
-from .http import GevError, check
+from .http import ODataError, check
 
 
 def download_metadata(session: requests.Session, base_url: str, out_path: str | Path) -> Path:
@@ -76,7 +76,7 @@ def fetch_entity_attributes(session: requests.Session, base_url: str, logical_na
     for cast, expand in _OPTION_CASTS.items():
         try:
             rows = _get(session, f"{ed}/Attributes/Microsoft.Dynamics.CRM.{cast}?$select=LogicalName&$expand={expand}")["value"]
-        except GevError as e:
+        except ODataError as e:
             print(f"  warning: {logical_name}: {cast} options not loaded ({e})", file=sys.stderr)
             continue
         for row in rows:
@@ -114,7 +114,7 @@ def fetch_attributes(session: requests.Session, base_url: str, logical_names, ou
             print(f"  [{i}/{len(names)}] {name}", file=sys.stderr)
         try:
             result[name] = fetch_entity_attributes(session, base_url, name)
-        except GevError as e:
+        except ODataError as e:
             print(f"  warning: skipped {name}: {e}", file=sys.stderr)
     if out_path:
         Path(out_path).write_text(json.dumps(result, indent=1, ensure_ascii=False), encoding="utf-8")

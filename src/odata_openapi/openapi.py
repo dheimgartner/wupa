@@ -24,8 +24,6 @@ ALL_OPERATIONS = ("list", "get", "create", "update", "delete")
 SECURITY_SCHEMES = {
     "negotiate": {"type": "http", "scheme": "negotiate",
                   "description": "Windows integrated authentication (Kerberos/NTLM)."},
-    "ntlm": {"type": "http", "scheme": "ntlm", "description": "NTLM authentication."},
-    "basic": {"type": "http", "scheme": "basic"},
     "bearer": {"type": "http", "scheme": "bearer", "description": "OAuth access token (e.g. from ADFS)."},
 }
 
@@ -59,7 +57,7 @@ REQUIRED_LEVELS = {"SystemRequired", "ApplicationRequired"}
 EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 
 
-def select_entity_sets(model: Model, include=("finma_*",), exclude=()) -> list[str]:
+def select_entity_sets(model: Model, include=("*",), exclude=()) -> list[str]:
     """Entity set names matching any include pattern and no exclude pattern (fnmatch, case-sensitive)."""
     def hit(name, patterns):
         return any(fnmatch.fnmatchcase(name, p) for p in patterns)

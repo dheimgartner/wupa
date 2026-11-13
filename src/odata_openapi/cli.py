@@ -9,7 +9,7 @@ from pathlib import Path
 from . import __version__, config
 from .csdl import parse_metadata
 from .download import download_metadata, fetch_attributes, load_attributes
-from .http import AUTH_CHOICES, GevError, make_session
+from .http import AUTH_CHOICES, ODataError, make_session
 from .openapi import ALL_OPERATIONS, SECURITY_SCHEMES, SpecBuilder, select_entity_sets
 
 import truststore
@@ -17,14 +17,12 @@ truststore.inject_into_ssl()
 
 
 # --- shared option groups ------------------------------------------------------
-def _connection(p: argparse.ArgumentParser):
+def _connection(p: argparse.ArgumentParser, base_url_required: bool = False):
     g = p.add_argument_group("connection")
-    g.add_argument("--base-url", help=f"Web API root (default: ${config.ENV_BASE_URL} or {config.DEFAULT_BASE_URL})")
-    g.add_argument("--auth", choices=AUTH_CHOICES, default=config.default_auth(),
-                   help="sspi = Windows single sign-on (default on Windows), kerberos (default elsewhere), "
-                        f"ntlm/basic (user/password from ${config.ENV_USER}/${config.ENV_PASSWORD} or prompt), "
-                        f"bearer (${config.ENV_TOKEN}), none")
-    g.add_argument("--user", help="User for ntlm/basic, e.g. FINMA\\F12345")
+    g.add_argument("--base-url", required=base_url_required,
+                   help=f"Web API root, e.g. https://host/org/api/data/v9.1 (or ${config.ENV_BASE_URL})")
+    g.add_argument("--auth", choices=AUTH_CHOICES, default="sspi",
+                   help="sspi = Windows single sign-on (default), none = no auth (testing only)")
     g.add_argument("--ca-bundle", help="CA certificate bundle for an internal CA")
     g.add_argument("--insecure", action="store_true", help="Skip TLS verification (testing only)")
 
@@ -32,7 +30,7 @@ def _connection(p: argparse.ArgumentParser):
 def _selection(p: argparse.ArgumentParser):
     g = p.add_argument_group("selection")
     g.add_argument("--include", action="append", metavar="PATTERN",
-                   help="Entity sets to include (glob, repeatable). Default: finma_*. Use '*' for all.")
+                   help="Entity sets to include (glob, repeatable). Default: * (all).")
     g.add_argument("--exclude", action="append", metavar="PATTERN", default=[],
                    help="Entity sets to exclude (glob, repeatable).")
 
@@ -43,7 +41,7 @@ def _generation(p: argparse.ArgumentParser):
                    help=f"Comma-separated subset of {','.join(ALL_OPERATIONS)} (default: all)")
     g.add_argument("--security", choices=[*SECURITY_SCHEMES, "none"], default="negotiate",
                    help="Security scheme declared in the spec (default: negotiate)")
-    g.add_argument("--title", default="GEV Web API", help="Spec title")
+    g.add_argument("--title", default="Dataverse Web API", help="Spec title")
 
 
 def _session(args):
@@ -51,7 +49,7 @@ def _session(args):
     if args.insecure:
         import urllib3
         urllib3.disable_warnings()
-    return make_session(args.auth, user=args.user, verify=verify)
+    return make_session(args.auth, verify=verify)
 
 
 def _includes(args):
@@ -62,7 +60,7 @@ def _operations(args):
     ops = [o.strip() for o in args.operations.split(",") if o.strip()]
     bad = set(ops) - set(ALL_OPERATIONS)
     if bad:
-        raise GevError(f"Unknown operations: {', '.join(sorted(bad))}")
+        raise ODataError(f"Unknown operations: {', '.join(sorted(bad))}")
     return ops
 
 
@@ -75,7 +73,7 @@ def _enrich(session, base_url, model, sets, out_path):
 def _generate(model, args, base_url, attributes):
     sets = select_entity_sets(model, _includes(args), args.exclude)
     if not sets:
-        raise GevError(f"No entity sets match --include {_includes(args)} --exclude {args.exclude}")
+        raise ODataError(f"No entity sets match --include {_includes(args)} --exclude {args.exclude}")
     spec = SpecBuilder(model, base_url, attributes, _operations(args), args.security, args.title).build(sets)
     out = Path(args.output)
     out.write_text(json.dumps(spec, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -108,7 +106,7 @@ def cmd_serve(args):
     spec = json.loads(Path(args.spec).read_text(encoding="utf-8"))
     upstream = session = None
     if not args.no_proxy:
-        upstream = args.base_url or (spec.get("servers") or [{}])[0].get("url") or config.resolve_base_url()
+        upstream = args.base_url or (spec.get("servers") or [{}])[0].get("url")
         session = _session(args)
     serve(spec, args.host, args.port, upstream, session, open_browser=not args.no_browser)
 
@@ -148,7 +146,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--enrich", action="store_true",
                    help="Also fetch required/choice/label info for the selected tables (recommended)")
     p.add_argument("--attributes-out", default="attributes.json")
-    _connection(p); _selection(p)
+    _connection(p, base_url_required=True); _selection(p)
     p.set_defaults(func=cmd_download)
 
     p = sub.add_parser("generate", help="Generate an OpenAPI 3.0 spec from a downloaded $metadata (offline)")
@@ -170,7 +168,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--workdir", default=".", help="Where metadata.xml / attributes.json are saved")
     p.add_argument("--enrich", action="store_true", help="Fetch column metadata (recommended)")
     p.add_argument("--serve", action="store_true", help="Start Swagger UI afterwards")
-    _connection(p); _selection(p); _generation(p); _serve_options(p)
+    _connection(p, base_url_required=True); _selection(p); _generation(p); _serve_options(p)
     p.set_defaults(func=cmd_build)
     return ap
 
@@ -179,7 +177,7 @@ def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     try:
         args.func(args)
-    except GevError as e:
+    except ODataError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
     return 0
