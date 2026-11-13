@@ -4,9 +4,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote
 
-from gev_openapi.cli import main
-from gev_openapi.download import fetch_entity_attributes
-from gev_openapi.http import make_session
+from odata_openapi.cli import main
+from odata_openapi.download import fetch_entity_attributes
+from odata_openapi.http import make_session
 
 DATA = Path(__file__).parent / "data"
 LBL = lambda s: {"UserLocalizedLabel": {"Label": s}, "LocalizedLabels": []}

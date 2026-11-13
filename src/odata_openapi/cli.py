@@ -1,4 +1,4 @@
-"""gev-openapi command line: download | generate | serve | build."""
+"""odata-openapi command line: download | generate | serve | build."""
 from __future__ import annotations
 
 import argparse
@@ -139,7 +139,7 @@ def _serve_options(p):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="gev-openapi", description=__doc__)
+    ap = argparse.ArgumentParser(prog="odata-openapi", description=__doc__)
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = ap.add_subparsers(dest="command", required=True)
 

@@ -1,4 +1,4 @@
-# gev-openapi
+# odata-openapi
 
 Generates an OpenAPI 3.0 (Swagger) spec for a Dynamics 365 / Dataverse Web API such as FINMA's GEV, from its OData `$metadata`, and optionally serves it in Swagger UI with working "Try it out".
 
@@ -22,7 +22,7 @@ Requires Python 3.9+. The only hard dependency is `requests`.
 
 ```bash
 # everything in one go: download, fetch column metadata, generate, open Swagger UI
-gev-openapi build --enrich --serve
+odata-openapi build --enrich --serve
 ```
 
 Defaults: base URL `https://gev-int.finma.ch/gev/api/data/v9.1` (or `$GEV_BASE_URL`), all `finma_*` entity sets, Windows single sign-on.
@@ -40,14 +40,14 @@ Examples:
 
 ```bash
 # only the tables you need, read + create only (small spec for UiPath)
-gev-openapi build --enrich --include finma_geschaefts --include finma_finmaobjektinstituts \
+odata-openapi build --enrich --include finma_geschaefts --include finma_finmaobjektinstituts \
     --include finma_geschaeftsprozesses --include finma_teilprozesses --operations list,get,create
 
 # everything except EHP tables
-gev-openapi generate metadata.xml --attributes attributes.json --exclude "finma_ehp*"
+odata-openapi generate metadata.xml --attributes attributes.json --exclude "finma_ehp*"
 
 # production, once you know its URL
-gev-openapi build --base-url https://<prod-host>/gev/api/data/v9.1 --enrich
+odata-openapi build --base-url https://<prod-host>/gev/api/data/v9.1 --enrich
 ```
 
 Connection options (all commands that call the server): `--auth sspi|kerberos|ntlm|basic|bearer|none`, `--user`, `--ca-bundle` (internal CA), `--insecure`. Passwords and tokens come from `$GEV_PASSWORD` / `$GEV_TOKEN` or a prompt, never from the command line.
@@ -90,8 +90,8 @@ The spec declares `negotiate` (Windows) security by default; set `--security` to
 ## Python API
 
 ```python
-from gev_openapi import parse_metadata, build_spec
-from gev_openapi.download import load_attributes
+from odata_openapi import parse_metadata, build_spec
+from odata_openapi.download import load_attributes
 
 model = parse_metadata("metadata.xml")
 spec = build_spec(model, "https://gev-int.finma.ch/gev/api/data/v9.1",

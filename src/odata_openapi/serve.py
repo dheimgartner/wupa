@@ -48,7 +48,7 @@ def make_server(spec: dict, host: str = "127.0.0.1", port: int = 8000, upstream:
     spec_bytes = json.dumps(served, ensure_ascii=False).encode("utf-8")
 
     base = "/static" if assets else CDN
-    page = (resources.files("gev_openapi").joinpath("templates/swagger.html").read_text(encoding="utf-8")
+    page = (resources.files("odata_openapi").joinpath("templates/swagger.html").read_text(encoding="utf-8")
             .replace("__TITLE__", spec.get("info", {}).get("title", "API"))
             .replace("__CSS__", f"{base}/swagger-ui.css")
             .replace("__JS__", f"{base}/swagger-ui-bundle.js")

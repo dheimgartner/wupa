@@ -4,9 +4,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import requests
 
-from gev_openapi import build_spec
-from gev_openapi.http import make_session
-from gev_openapi.serve import make_server
+from odata_openapi import build_spec
+from odata_openapi.http import make_session
+from odata_openapi.serve import make_server
 
 
 class FakeDataverse(BaseHTTPRequestHandler):

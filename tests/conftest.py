@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from gev_openapi import parse_metadata
+from odata_openapi import parse_metadata
 
 DATA = Path(__file__).parent / "data"
 

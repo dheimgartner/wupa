@@ -22,7 +22,7 @@ class GevError(RuntimeError):
 
 
 def _missing(extra: str, package: str) -> GevError:
-    return GevError(f"Authentication needs '{package}': pip install \"gev-openapi[{extra}]\"")
+    return GevError(f"Authentication needs '{package}': pip install \"odata-openapi[{extra}]\"")
 
 
 def make_session(auth: str = "none", user: str | None = None, password: str | None = None,

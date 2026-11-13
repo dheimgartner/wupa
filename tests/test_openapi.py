@@ -1,6 +1,6 @@
 from openapi_spec_validator import validate
 
-from gev_openapi import build_spec, select_entity_sets
+from odata_openapi import build_spec, select_entity_sets
 
 
 def test_selection(model):
